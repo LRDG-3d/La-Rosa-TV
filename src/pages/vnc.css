@@ -1,0 +1,143 @@
+.vnc-app{
+  --bg-0:#0a0d12;
+  --bg-1:#0d1117;
+  --panel:#131820;
+  --border:#242c38;
+  --text-hi:#e6edf3;
+  --text-lo:#7d8998;
+  --accent:#5eead4;
+  --accent-dim:#2d5a52;
+  --warn:#f0b656;
+  --danger:#f0716a;
+  --mono:'JetBrains Mono', monospace;
+
+  background:
+    radial-gradient(ellipse 900px 500px at 15% -10%, rgba(94,234,212,0.06), transparent 60%),
+    radial-gradient(ellipse 700px 500px at 100% 110%, rgba(240,182,86,0.04), transparent 60%),
+    var(--bg-0);
+  color:var(--text-hi);
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+}
+
+.vnc-header{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:22px 28px;
+  border-bottom:1px solid var(--border);
+}
+.vnc-brand{ display:flex; align-items:center; gap:12px; }
+.vnc-brand-mark{
+  width:30px; height:30px; border-radius:8px;
+  background:linear-gradient(135deg, var(--accent), var(--accent-dim));
+  display:flex; align-items:center; justify-content:center;
+  font-family:var(--mono); font-weight:700; font-size:13px; color:var(--bg-0);
+  flex-shrink:0;
+}
+.vnc-brand-text{ font-family:var(--mono); font-size:14px; letter-spacing:0.06em; font-weight:600; }
+.vnc-brand-text span{ color:var(--text-lo); font-weight:400; }
+
+.vnc-status-pill{
+  display:flex; align-items:center; gap:8px;
+  font-family:var(--mono); font-size:12px; color:var(--text-lo);
+  padding:6px 12px; border:1px solid var(--border); border-radius:100px; background:var(--bg-1);
+}
+.vnc-radar{ position:relative; width:8px; height:8px; border-radius:50%; background:var(--text-lo); flex-shrink:0; }
+.vnc-radar.connecting{ background:var(--warn); animation:vnc-pulse 1s ease-in-out infinite; }
+.vnc-radar.live{ background:var(--accent); }
+.vnc-radar.live::after{
+  content:''; position:absolute; inset:-6px; border-radius:50%;
+  border:1px solid var(--accent); animation:vnc-radarpulse 2s ease-out infinite;
+}
+.vnc-radar.error{ background:var(--danger); }
+@keyframes vnc-pulse{ 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+@keyframes vnc-radarpulse{ 0%{transform:scale(0.6); opacity:0.8;} 100%{transform:scale(2.4); opacity:0;} }
+
+.vnc-main{ flex:1; display:flex; align-items:flex-start; justify-content:center; padding:48px 24px; }
+
+.vnc-connect-view{ width:100%; max-width:420px; margin-top:4vh; }
+.vnc-eyebrow{ font-family:var(--mono); font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--accent); margin-bottom:10px; }
+.vnc-connect-view h1{ font-size:28px; font-weight:600; letter-spacing:-0.01em; margin-bottom:8px; }
+.vnc-sub{ color:var(--text-lo); font-size:14px; line-height:1.5; margin-bottom:32px; }
+
+.vnc-panel{ background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:24px; }
+.vnc-field{ margin-bottom:16px; }
+.vnc-field:last-of-type{ margin-bottom:0; }
+.vnc-field label{
+  display:block; font-family:var(--mono); font-size:11px; letter-spacing:0.06em;
+  text-transform:uppercase; color:var(--text-lo); margin-bottom:7px;
+}
+.vnc-row2{ display:flex; gap:12px; }
+.vnc-row2 .vnc-field{ flex:1; }
+.vnc-row2 .vnc-narrow{ flex:0 0 100px; }
+
+.vnc-app input[type=text],
+.vnc-app input[type=password],
+.vnc-app input[type=number]{
+  width:100%; background:var(--bg-1); border:1px solid var(--border); border-radius:8px;
+  padding:10px 12px; color:var(--text-hi); font-family:var(--mono); font-size:13.5px;
+  outline:none; transition:border-color .15s ease;
+}
+.vnc-app input:focus{ border-color:var(--accent); }
+.vnc-app input::placeholder{ color:#465061; }
+
+.vnc-checkbox-row{ display:flex; align-items:center; gap:9px; margin-top:18px; font-size:13px; color:var(--text-lo); }
+.vnc-checkbox-row input{ accent-color:var(--accent); width:15px; height:15px; }
+
+.vnc-btn{
+  width:100%; margin-top:24px; background:var(--accent); color:#06231d; border:none;
+  border-radius:8px; padding:13px; font-weight:600; font-size:14.5px; cursor:pointer;
+  transition:filter .15s ease, transform .1s ease;
+}
+.vnc-btn:hover{ filter:brightness(1.08); }
+.vnc-btn:active{ transform:scale(0.99); }
+.vnc-btn:disabled{ background:var(--border); color:var(--text-lo); cursor:not-allowed; }
+
+.vnc-msg{
+  margin-top:14px; font-family:var(--mono); font-size:12.5px; padding:10px 12px;
+  border-radius:8px; line-height:1.5;
+}
+.vnc-msg.error{ background:rgba(240,113,106,0.1); color:var(--danger); border:1px solid rgba(240,113,106,0.25); }
+.vnc-msg.info{ background:rgba(94,234,212,0.08); color:var(--accent); border:1px solid rgba(94,234,212,0.2); }
+
+.vnc-hint{ margin-top:20px; font-size:12px; color:var(--text-lo); line-height:1.6; }
+.vnc-hint code{ font-family:var(--mono); background:var(--bg-1); padding:1px 5px; border-radius:4px; color:var(--text-hi); }
+
+.vnc-viewer-view{ display:flex; width:100%; height:calc(100vh - 90px); flex-direction:column; align-items:center; }
+.vnc-viewer-toolbar{
+  width:100%; max-width:1100px; display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:14px; font-family:var(--mono); font-size:12.5px;
+}
+.vnc-host-info{ color:var(--text-lo); }
+.vnc-host-info b{ color:var(--text-hi); font-weight:600; }
+.vnc-toolbar-actions{ display:flex; gap:8px; }
+.vnc-tbtn{
+  background:var(--bg-1); border:1px solid var(--border); color:var(--text-lo);
+  padding:7px 13px; border-radius:7px; font-size:12.5px; cursor:pointer; transition:all .15s ease;
+  font-family:inherit;
+}
+.vnc-tbtn:hover{ color:var(--text-hi); border-color:var(--accent); }
+.vnc-tbtn.danger:hover{ color:var(--danger); border-color:var(--danger); }
+
+.vnc-screen-wrap{
+  flex:1; width:100%; max-width:1100px; background:#000; border:1px solid var(--border);
+  border-radius:12px; overflow:hidden; position:relative; display:flex;
+  align-items:center; justify-content:center;
+}
+.vnc-screen-wrap.tuning::before{
+  content:''; position:absolute; inset:0;
+  background:repeating-linear-gradient(to bottom, rgba(94,234,212,0.05) 0px, transparent 2px, transparent 4px);
+  animation:vnc-scan 1.2s linear infinite; z-index:5; pointer-events:none;
+}
+@keyframes vnc-scan{ 0%{transform:translateY(-100%);} 100%{transform:translateY(100%);} }
+.vnc-screen{ width:100%; height:100%; }
+.vnc-screen canvas{ outline:none; }
+
+.vnc-footer{ text-align:center; padding:16px; font-family:var(--mono); font-size:11px; color:#3a4451; }
+
+@media (max-width:640px){
+  .vnc-header{ padding:16px 18px; }
+  .vnc-main{ padding:28px 16px; }
+  .vnc-brand-text{ display:none; }
+  .vnc-connect-view h1{ font-size:23px; }
+}
