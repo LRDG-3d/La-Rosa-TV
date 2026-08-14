@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { VncScreen } from 'react-vnc';
 import './vnc.css';
 
 export default function Vnc() {
@@ -14,9 +15,9 @@ export default function Vnc() {
   const [connected, setConnected] = useState(false);
   const [tuning, setTuning] = useState(false);
 
-  const screenRef = useRef(null);
+  const [vncUrl, setVncUrl] = useState(null);
   const screenWrapRef = useRef(null);
-  const rfbRef = useRef(null);
+  const vncRef = useRef(null);
 
   // Load remembered connection
   useEffect(() => {
@@ -27,7 +28,7 @@ export default function Vnc() {
     if (saved.remember) setRemember(true);
   }, []);
 
-  const handleConnect = useCallback(async () => {
+  const handleConnect = () => {
     if (!host.trim()) {
       setMsg({ text: 'Ingresá un host para conectar.', type: 'error' });
       return;
@@ -41,52 +42,33 @@ export default function Vnc() {
     }
 
     const proto = window.location.protocol === 'https:' ? 'wss' : 'ws';
-    const url = `${proto}://${host}:${port || '6080'}/${path}`;
-
     setStatus('connecting');
     setStatusText('conectando…');
+    setVncUrl(`${proto}://${host}:${port || '6080'}/${path}`);
+  };
 
-    try {
-      // Dynamic import keeps @novnc/novnc out of the main bundle until needed
-      const { default: RFB } = await import('@novnc/novnc/core/rfb.js');
+  const onVncConnect = () => {
+    setStatus('live');
+    setStatusText('en vivo');
+    setConnected(true);
+    setTuning(true);
+    setTimeout(() => setTuning(false), 700);
+  };
 
-      const rfb = new RFB(screenRef.current, url, { credentials: { password } });
-      rfbRef.current = rfb;
+  const onVncDisconnect = () => {
+    setConnected(false);
+    setVncUrl(null);
+    setStatus('idle');
+    setStatusText('inactivo');
+  };
 
-      rfb.addEventListener('connect', () => {
-        setStatus('live');
-        setStatusText('en vivo');
-        setConnected(true);
-        setTuning(true);
-        setTimeout(() => setTuning(false), 700);
-      });
-
-      rfb.addEventListener('disconnect', (e) => {
-        setConnected(false);
-        setStatus('idle');
-        setStatusText('inactivo');
-        if (e.detail && !e.detail.clean) {
-          setMsg({ text: 'Se cortó la conexión. Revisá el host, puerto y que el servidor esté activo.', type: 'error' });
-          setStatus('error');
-          setStatusText('error');
-        }
-      });
-
-      rfb.addEventListener('credentialsrequired', () => {
-        setMsg({ text: 'El servidor requiere contraseña.', type: 'error' });
-      });
-
-      rfb.scaleViewport = true;
-      rfb.resizeSession = true;
-    } catch (err) {
-      setStatus('error');
-      setStatusText('error');
-      setMsg({ text: 'No se pudo iniciar la conexión: ' + err.message, type: 'error' });
-    }
-  }, [host, port, path, password, remember]);
+  const onVncCredentialsRequired = () => {
+    setMsg({ text: 'El servidor requiere contraseña.', type: 'error' });
+    vncRef.current?.sendCredentials({ password });
+  };
 
   const handleDisconnect = () => {
-    rfbRef.current?.disconnect();
+    vncRef.current?.disconnect();
   };
 
   const handleFullscreen = () => {
@@ -98,7 +80,7 @@ export default function Vnc() {
   };
 
   const handleCtrlAltDel = () => {
-    rfbRef.current?.sendCtrlAltDel();
+    vncRef.current?.sendCtrlAltDel();
   };
 
   const onKeyDown = (e) => {
@@ -209,7 +191,19 @@ export default function Vnc() {
               </div>
             </div>
             <div ref={screenWrapRef} className={`vnc-screen-wrap ${tuning ? 'tuning' : ''}`}>
-              <div ref={screenRef} className="vnc-screen" />
+              {vncUrl && (
+                <VncScreen
+                  ref={vncRef}
+                  url={vncUrl}
+                  scaleViewport
+                  background="#000000"
+                  style={{ width: '100%', height: '100%' }}
+                  rfbOptions={{ credentials: { password } }}
+                  onConnect={onVncConnect}
+                  onDisconnect={onVncDisconnect}
+                  onCredentialsRequired={onVncCredentialsRequired}
+                />
+              )}
             </div>
           </div>
         )}
