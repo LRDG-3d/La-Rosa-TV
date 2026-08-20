@@ -1,11 +1,26 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
-import Vnc from './pages/Vnc.jsx';
+import { HashRouter, Routes, Route } from 'react-router-dom'
+import { AuthProvider } from './context/AuthContext.jsx'
+import ProtectedRoute from './components/ProtectedRoute.jsx'
+import Home from './pages/Home.jsx'
+import AdminDashboard from './pages/AdminDashboard.jsx'
+import './App.css'
 
 export default function App() {
   return (
-    <Routes>
-      <Route path="/" element={<Vnc />} />
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
-  );
+    <AuthProvider>
+      <HashRouter>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute>
+                <AdminDashboard />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </HashRouter>
+    </AuthProvider>
+  )
 }
